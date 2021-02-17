@@ -5,34 +5,45 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <head>
     <title>Title</title>
 </head>
+
 <style>
 .post {background-color: Azure;}
 .post-box {background-color: #F0F8FF;}
-
-</style></style>
+.input-post {
+    position:fixed;
+}
+</style>
 <body>
-    <nav class="navbar navbar-default navbar-fixed-top bg-info">
+<nav class="navbar navbar-default navbar-fixed-top bg-info">
       <div class="container  text-center">
        My first Realtime Blog
       </div>
     </nav>
     <div class="container ">
-
-        <div class="row">
+        <div class="container ">
+        <div class="row mt-4">
             <div class="col-2 ">
 
             </div>
-            <div class="col-8 border text-center rounded  align-center">
-                Row 2 col 1
+            <div class="col-8 border text-center rounded  align-center ">
+              <form>
+                <textarea id="blog-input" name="w3review" rows="3" class ="col rounded border mt-1">
+                 Sending sample post
+                </textarea>
+                <input type="button" id="blog-submit" value="Submit" class="float-right my-2">
+              </form>
             </div>
             <div class="col-3">
 
             </div>
         </div>
-        <div class="row mt-3">
+        </div>
+        <div class="container " id="some-id">
+        <div class="row mt-3" id="post-0"  style='display:none'>
             <div class="col-2 ">
 
             </div>
@@ -47,8 +58,51 @@
             <div class="col-3">
 
             </div>
+
+        </div>
+
+
         </div>
 
     </div>>
 </body>
+<script>
+         document.querySelector('#blog-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#blog-input');
+            const message = messageInputDom.value;
+            //document.querySelector('#chat-log').value += message +'\n';
+            var newDiv = $("#post-0").clone();
+            newDiv.removeAttr("id");
+            newDiv.show();
+            newDiv.find('.post').html(message);
+            newDiv.prependTo($('#some-id'));
+
+        };
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/blog/'
+
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').value += (data.message + '\n');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+
+
+</script>
 </html>
